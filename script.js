@@ -1,5 +1,5 @@
 let activeTag = "all";
-let tags = ["all", "deeplearning", "education"];
+let tags = ["all", "deeplearning", "education", "physicssim"];
 
 tags.forEach((tagToDisplay) => {
     document.getElementById(tagToDisplay + "-button").onclick = (e) => {
