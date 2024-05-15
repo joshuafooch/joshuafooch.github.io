@@ -31,11 +31,17 @@
         <div class="imagescontainer">
             <div class="contentandimagecontainer">
                 <div class="contentimagecontainer">
-                    <div class="contentimagetitle">TO:</div>
+                    <div class="contentimagetitle">
+                            <input type="button" id="getContentPicButton" value="Choose content picture">
+                            <input type="file" id="getContentPic" accept="image/png, image/jpeg">
+                    </div>
                     <div class="contentimage" id="contentimage"></div>
                 </div>
                 <div class="styleimagecontainer">
-                    <div class="styleimagetitle">FROM:</div>
+                    <div class="styleimagetitle">
+                        <input type="button" id="getStylePicButton" value="Choose style picture">
+                        <input type="file" id="getStylePic" accept="image/png, image/jpeg">
+                    </div>
                     <div class="styleimage" id="styleimage"></div>
                 </div>
             </div>

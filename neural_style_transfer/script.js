@@ -1,4 +1,24 @@
-// instantiate transfer button and slider
+// instantiate buttons and slider
+$("#getContentPicButton").on("click", () => {
+  $("#getContentPic").click();
+});
+
+$("#getContentPic").on("change", (event) => {
+  console.log(event.target.value);
+  document.getElementById("contentimage").removeChild(document.getElementById("contentimage").childNodes[0]);
+  displayedContentImage = loadBrowserImage("event.target.value", "content");
+});
+
+$("#getStylePicButton").on("click", () => {
+  $("#getStylePic").click();
+});
+
+$("#getStylePic").on("change", (event) => {
+  console.log(event.target.value);
+  document.getElementById("styleimage").removeChild(document.getElementById("styleimage").childNodes[0]);
+  displayedContentImage = loadBrowserImage("event.target.value", "style");
+});
+
 $("#transferbutton").on("click", () => {
   generatedImage = transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, 1e-4, 4e-4, model, $("#epochslider").val(), 0.5);
   // transferStyle();
@@ -9,15 +29,23 @@ $("#epochslider").on("input", () => {
 })
 
 // load displayed images
-var displayedContentImage = document.createElement("img");
-displayedContentImage.src = "dog.jpg";
-displayedContentImage.classList.add("contentimage");
-document.getElementById("contentimage").appendChild(displayedContentImage);
+function loadBrowserImage(filePath, contentOrStyle) {
+  let displayedImage = document.createElement("img");
+  displayedImage.src = filePath;
+  if (contentOrStyle == "content") {
+    displayedImage.classList.add("contentimage");
+    document.getElementById("contentimage").appendChild(displayedImage);
+  } else if (contentOrStyle == "style") {
+    displayedImage.classList.add("styleimage");
+    document.getElementById("styleimage").appendChild(displayedImage);
+  }
+  return displayedImage;
+}
+let displayedContentImage;
+let displayedStyleImage;
 
-var displayedStyleImage = document.createElement("img");
-displayedStyleImage.src = "style_images/starry_night.jpg";
-displayedStyleImage.classList.add("styleimage");
-document.getElementById("styleimage").appendChild(displayedStyleImage);
+displayedContentImage = loadBrowserImage("dog.jpg", "content");
+displayedStyleImage = loadBrowserImage("style_images/starry_night.jpg", "style");
 
 // load true images for processing; necessary since displayed images have been resized for the view window
 var trueContentImage = document.createElement("img");
