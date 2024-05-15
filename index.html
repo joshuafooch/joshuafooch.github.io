@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <title>My Portfolio</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="http://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" type="module"></script>
+
+    <!-- <link rel="icon" type="image/png" href="images/favicon.png"> -->
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row" style="margin-top: 15%">
+            <h1 class="title">Joshua Foo</h1>
+            <p>Hi, this is my portfolio of projects I have created over the years. I am constantly seeking new things to try out, and am constantly working on new projects to update here.</p>
+        </div>
+        <div class="row" style="margin-top: 5%">
+            <div class="three columns">
+                <button class="button-primary" id="all-button">ALL</button>
+                <button id="deeplearning-button">Deep Learning</button>
+                <button id="education-button">Education</button>
+            </div>
+            <div class="nine columns">
+                <table class="u-full-width portfolio-table">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Year</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="portfolio-table-body">
+                        <tr class="deeplearning">
+                            <td><a href="./neural_style_transfer">Neural Style Transfer</a></td>
+                            <td>2024</td>
+                            <td>
+                                <p>A pre-trained VGG-19</p>
+                                <p>Frameworks: TensorFlow, TensorFlow.js</p>
+                            </td>
+                        </tr>
+                        <tr class="deeplearning education">
+                            <td><a href="./neural_network_illustration">Neural Network Illustration</a></td>
+                            <td>2024</td>
+                            <td>
+                                <p>An visual representation of how the different units of the layers of a simple 3-layer Dense Neural Network trained on MNIST handwritten digits are activated.</p>
+                                <p>Frameworks: TensorFlow, TensorFlow.js, p5.js</p>
+                            </td>
+                        </tr>
+                        <tr class="deeplearning">
+                            <td><a href="https://number-recognition-f469a.web.app/">My First Neural Network</a></td>
+                            <td>2022</td>
+                            <td>
+                                <p>A simple 2-layer Dense Neural Network trained on MNIST handwritten digits. The NN is fully coded in Python, vectorized using NumPy and served on Google Firebase. (Note that there is a cold start for the first connection to Google Firebase)</p>
+                                <p>Frameworks: Google Firebase, Google Cloud Functions, p5.js</p>
+                            </td>
+                        </tr>
+                        <tr class="education">
+                            <td><a href="https://battleships-dfa2f.web.app/">Cartesian Battleships (Online PvP)</a></td>
+                            <td>2021</td>
+                            <td>
+                                <p>The Cartesian Battleships game created in 2020 was updated to be served on Google Firebase, allowing for online PvP.</p>
+                                <p>Frameworks: Google Firebase</p>
+                            </td>
+                        </tr>
+                        <tr class="education">
+                            <td><a href="./parachute">Simulation of Forces of Falling Parachutist</a></td>
+                            <td>2021</td>
+                            <td>
+                                <p>A physics simulation illustrating the forces acting on a parachutist as he falls from the sky, created to help students visualise how the forces change with time and how these forces affect motion.</p>
+                                <p>Frameworks: Javascript, CSS</p>
+                            </td>
+                        </tr>
+                        <tr class="education">
+                            <td><a href="./battleships">Cartesian Battleships (Single-device PvP)</a></td>
+                            <td>2020</td>
+                            <td>
+                                <p>A battleships game created to facilitate learning of Cartesian coordinates.</p>
+                                <p>Frameworks: Javascript, CSS</p>
+                            </td>
+                        </tr>
+                        <tr class="education">
+                            <td><a href="./kinematics">Simulation of Kinematics Motion</a></td>
+                            <td>2020</td>
+                            <td>
+                                <p>A physics simulation that allows the user to set the position, velocity and acceleration of an object and observe the resultant motion of the object, created to help students visualise the different types of motions.</p>
+                                <p>Frameworks: Javascript, CSS</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 15%">
+        </div>
+    </div>
+
+</body>
+
+</html>
