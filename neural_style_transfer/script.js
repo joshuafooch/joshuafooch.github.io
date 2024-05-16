@@ -12,9 +12,9 @@ if (window.innerWidth > 600) {
   styleMaxPixels = 100000;
   learningRate = 0.5;
 } else { // limit the image resolution for processing for mobile devices with a browser memory limit
-  contentMaxPixels = 40000;
+  contentMaxPixels = 20000;
   styleMaxPixels = 10000;
-  learningRate = 0.01;
+  learningRate = 0.005;
 }
 
 // instantiate buttons, dropdowns and slider
