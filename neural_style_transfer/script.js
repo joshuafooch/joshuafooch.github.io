@@ -11,9 +11,9 @@ if (window.innerWidth > 600) {
   contentMaxPixels = 500000;
   styleMaxPixels = 100000;
   learningRate = 0.5;
-} else {
-  contentMaxPixels = 100000;
-  styleMaxPixels = 50000;
+} else { // limit the image resolution for processing for mobile devices with a browser memory limit
+  contentMaxPixels = 90000;
+  styleMaxPixels = 40000;
   learningRate = 0.05;
 }
 
