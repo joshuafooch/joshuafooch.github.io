@@ -1,12 +1,55 @@
-// instantiate buttons and slider
+// initialize picture variables
+let displayedContentImage;
+let displayedStyleImage;
+let trueContentImage;
+let trueStyleImage;
+let generatedImage;
+let contentMaxPixels;
+let styleMaxPixels;
+if (window.innerWidth > 600) {
+  contentMaxPixels = 500000;
+  styleMaxPixels = 100000;
+} else {
+  contentMaxPixels = 200000;
+  styleMaxPixels = 100000;
+}
+
+// instantiate buttons, dropdowns and slider
+$("#defaultContentPictures").on("change", (event) => {
+  if (document.getElementById("contentimage").childNodes[0]) document.getElementById("contentimage").removeChild(document.getElementById("contentimage").childNodes[0]);
+  if (event.target.value == "nil") return;
+  let defaultPaths = {
+    "dog": "dog.jpg",
+    "human": "human.jpg"
+  };
+  displayedContentImage = loadDefaultImage(defaultPaths[event.target.value], "content");
+  displayedContentImage.classList.add("contentimage");
+  document.getElementById("contentimage").appendChild(displayedContentImage);
+});
+
+$("#defaultStylePictures").on("change", (event) => {
+  if (document.getElementById("styleimage").childNodes[0]) document.getElementById("styleimage").removeChild(document.getElementById("styleimage").childNodes[0]);
+  if (event.target.value == "nil") return;
+  let defaultPaths = {
+    "starry_night": "style_images/starry_night.jpg",
+    "mona_lisa": "style_images/mona_lisa.jpg",
+    "cafe": "style_images/a_man_in_a_cafe.jpg"
+  };
+  displayedStyleImage = loadDefaultImage(defaultPaths[event.target.value], "style");
+  displayedStyleImage.classList.add("styleimage");
+  document.getElementById("styleimage").appendChild(displayedStyleImage);
+});
+
 $("#getContentPicButton").on("click", () => {
   $("#getContentPic").click();
 });
 
 $("#getContentPic").on("change", (event) => {
-  console.log(event.target.value);
-  document.getElementById("contentimage").removeChild(document.getElementById("contentimage").childNodes[0]);
-  displayedContentImage = loadBrowserImage("event.target.value", "content");
+  if (!event.target.files[0]) return;
+  if (document.getElementById("contentimage").childNodes[0]) document.getElementById("contentimage").removeChild(document.getElementById("contentimage").childNodes[0]);
+  displayedContentImage = loadBrowserImage(event.target.files[0], "content");
+  displayedContentImage.classList.add("contentimage");
+  document.getElementById("contentimage").appendChild(displayedContentImage);
 });
 
 $("#getStylePicButton").on("click", () => {
@@ -14,46 +57,116 @@ $("#getStylePicButton").on("click", () => {
 });
 
 $("#getStylePic").on("change", (event) => {
-  console.log(event.target.value);
-  document.getElementById("styleimage").removeChild(document.getElementById("styleimage").childNodes[0]);
-  displayedContentImage = loadBrowserImage("event.target.value", "style");
+  if (!event.target.files[0]) return;
+  if (document.getElementById("styleimage").childNodes[0]) document.getElementById("styleimage").removeChild(document.getElementById("styleimage").childNodes[0]);
+  displayedStyleImage = loadBrowserImage(event.target.files[0], "style");
+  displayedStyleImage.classList.add("styleimage");
+  document.getElementById("styleimage").appendChild(displayedStyleImage);
 });
 
 $("#transferbutton").on("click", () => {
-  generatedImage = transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, 1e-4, 4e-4, model, $("#epochslider").val(), 0.5);
-  // transferStyle();
+  generatedImage = tf.tidy(() => {
+    return transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, 1e-4, 4e-4, model, Number($("#epochslider").val()), 0.5);
+  });
 });
 
 $("#epochslider").on("input", () => {
   $(".epochtext").text("Epochs: " + $("#epochslider").val());
 })
 
-// load displayed images
-function loadBrowserImage(filePath, contentOrStyle) {
-  let displayedImage = document.createElement("img");
-  displayedImage.src = filePath;
-  if (contentOrStyle == "content") {
-    displayedImage.classList.add("contentimage");
-    document.getElementById("contentimage").appendChild(displayedImage);
-  } else if (contentOrStyle == "style") {
-    displayedImage.classList.add("styleimage");
-    document.getElementById("styleimage").appendChild(displayedImage);
+// function for loading displayed images and true sized images for processing from user selected file
+function loadBrowserImage(file, contentOrStyle) {
+  // Check that FileReader is supported and that a file is passed into the function
+  if (FileReader && file) {
+    let displayedImage = document.createElement("img");
+    const fr = new FileReader();
+    fr.addEventListener(
+      "load", () => {
+        displayedImage.src = fr.result;
+        if (contentOrStyle == "content") {
+          if(trueContentImage) trueContentImage.dispose(); // dispose old image tensor
+          trueContentImage = document.createElement("img");
+          trueContentImage.onload = async () => {
+            trueContentImage = await loadImage(trueContentImage);
+
+            // Check resolution of image to ensure it is not too large, else resize
+            trueContentImage = resizeImage(trueContentImage, contentMaxPixels);
+
+            // Generated image is a variable copy of truecontentimage
+            if(generatedImage) generatedImage.dispose(); // dispose old image tensor
+            generatedImage = tf.variable(trueContentImage);
+          };
+          trueContentImage.src = fr.result;
+        } else if (contentOrStyle == "style") {
+          trueStyleImage = document.createElement("img");
+          trueStyleImage.onload = async () => {
+            trueStyleImage = await loadImage(trueStyleImage);
+
+            // Check resolution of image to ensure it is not too large, else resize
+            trueStyleImage = resizeImage(trueStyleImage, styleMaxPixels);
+          };
+          trueStyleImage.src = fr.result;
+        }
+      },
+      false,
+    );
+    fr.readAsDataURL(file);
+    epochNum = 1; // reset epoch counter
+    resetCanvas();
+    return displayedImage;
   }
+}
+
+// function for loading displayed images and true sized images for processing from default selection of images
+function loadDefaultImage(path, contentOrStyle) {
+  let displayedImage = document.createElement("img");
+  displayedImage.src = path;
+  if (contentOrStyle == "content") {
+    trueContentImage = document.createElement("img");
+    trueContentImage.onload = async () => {
+      trueContentImage = await loadImage(trueContentImage);
+
+      // Check resolution of image to ensure it is not too large, else resize
+      trueContentImage = resizeImage(trueContentImage, contentMaxPixels);
+
+      // Generated image is a variable copy of truecontentimage
+      if(generatedImage) generatedImage.dispose(); // dispose old image tensor
+      generatedImage = tf.variable(trueContentImage);
+    };
+    trueContentImage.src = path;
+  } else if (contentOrStyle == "style") {
+    trueStyleImage = document.createElement("img");
+    trueStyleImage.onload = async () => {
+      trueStyleImage = await loadImage(trueStyleImage);
+
+      // Check resolution of image to ensure it is not too large, else resize
+      trueStyleImage = resizeImage(trueStyleImage, styleMaxPixels);
+    };
+    trueStyleImage.src = path;
+  }
+  epochNum = 1; // reset epoch counter
+  resetCanvas();
   return displayedImage;
 }
-let displayedContentImage;
-let displayedStyleImage;
 
-displayedContentImage = loadBrowserImage("dog.jpg", "content");
-displayedStyleImage = loadBrowserImage("style_images/starry_night.jpg", "style");
+// function to resize the images so as to reduce memory usage
+function resizeImage(image, maxPixels) {
+  if (image.shape[0] * image.shape[1] > maxPixels) {
+    let heightToWidthRatio = image.shape[0] / image.shape[1];
+    let newHeight = Math.round(Math.sqrt(maxPixels * heightToWidthRatio));
+    let newWidth = Math.round(newHeight / heightToWidthRatio);
+    image = tf.image.resizeBilinear(image, [newHeight, newWidth]);
+  }
+  return image;
+}
 
-// load true images for processing; necessary since displayed images have been resized for the view window
-var trueContentImage = document.createElement("img");
-trueContentImage.src = displayedContentImage.src;
-var trueStyleImage = document.createElement("img");
-trueStyleImage.src = displayedStyleImage.src;
-var generatedImage = document.createElement("img");
-generatedImage.src = displayedContentImage.src;
+// function to reset canvas
+function resetCanvas() {
+  const context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.style.width = "auto"; // reset canvas width
+  canvas.style.height = "auto"; // reset canvas height
+}
 
 // get canvas height and width
 const canvasContainer = document.getElementById("styledimagecontainer");
@@ -65,7 +178,7 @@ const canvasWidth = canvasContainer.offsetWidth;
 const model = await tf.loadLayersModel("web_model/model.json"); // pre-trained VGG19 feature extractor
 const NUM_CONTENT_LAYERS = 1;
 const NUM_STYLE_LAYERS = 6;
-var epochNum = 1;
+let epochNum = 1; // current epoch counter
 // model.summary();
 
 // utility functions
@@ -140,33 +253,30 @@ function getTotalLoss(generatedImage, contentTargets, styleTargets, contentWeigh
   const contentLoss = getContentLoss(generatedImage, contentTargets, model);
   const styleLoss = getStyleLoss(generatedImage, styleTargets, model);
   const loss = tf.add(tf.mul(contentLoss, contentWeight), tf.mul(styleLoss, styleWeight));
-  // return tf.scalar(loss.dataSync()[0]);
   return loss;
 }
 
-function transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, contentWeight, styleWeight, model, epochs=10, learningRate=0.5){
+function transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, contentWeight, styleWeight, model, epochs, learningRate=0.5){
   const optimizer = tf.train.adam(20, 0.50);
 
   const contentTargets = getContentTargets(trueContentImage, model);
   const styleTargets = getStyleTargets(trueStyleImage, model);
+  let newGeneratedImage = generatedImage;
   for (let index = 0; index < epochs; index++) {
     $("#transferbutton").text("Epoch: " + String(index+epochNum));
-    const totalLoss = (generatedImage) => getTotalLoss(generatedImage, contentTargets, styleTargets, contentWeight, styleWeight, model);
+    const totalLoss = (newGeneratedImage) => getTotalLoss(newGeneratedImage, contentTargets, styleTargets, contentWeight, styleWeight, model);
     const valueAndGrad = tf.valueAndGrad(totalLoss);
-    const {value, grad} = valueAndGrad(generatedImage);
+    const {value, grad} = valueAndGrad(newGeneratedImage);
     const decayedLearningRate = learningRate * 0.5 ** ((index+epochNum)/10);
-    generatedImage = tf.sub(generatedImage, tf.mul(0.3, grad));
-    console.log("Epoch: " + String(index+epochNum) + " Loss: " + String(value.dataSync([0])));
+    newGeneratedImage = tf.sub(newGeneratedImage, tf.mul(0.3, grad));
+    console.log("Epoch: " + String(index + epochNum) + " Loss: " + String(value.dataSync([0])));
   }
   epochNum += epochs;
   $("#transferbutton").text("Completed!");
-  // const grads = tf.variableGrads(totalLoss, [generatedImage]);
-  // const grads = optimizer.computeGradients(totalLoss);
-  // optimizer.applyGradients([grads(generatedImage), generatedImage]);
-  generatedImage = tf.clipByValue(generatedImage, 0, 255);
-  generatedImage = tf.cast(generatedImage, "int32");
-  const generatedImageHeight = generatedImage.shape[0];
-  const generatedImageWidth = generatedImage.shape[1];
+  newGeneratedImage = tf.clipByValue(newGeneratedImage, 0, 255);
+  newGeneratedImage = tf.cast(newGeneratedImage, "int32");
+  const generatedImageHeight = newGeneratedImage.shape[0];
+  const generatedImageWidth = newGeneratedImage.shape[1];
   if ((canvasHeight/canvasWidth) > (generatedImageHeight/generatedImageWidth)){
     if (window.innerWidth > 600) canvas.style.width = "50vw";
     else canvas.style.width = "80vw";
@@ -174,18 +284,6 @@ function transferStyleTraining(trueContentImage, trueStyleImage, generatedImage,
     if (window.innerWidth > 600) canvas.style.height = "60vh";
     else canvas.style.height = "40vh";
   }
-  tf.browser.toPixels(generatedImage, canvas);
-  return generatedImage;
+  tf.browser.toPixels(newGeneratedImage, canvas);
+  return newGeneratedImage;
 }
-
-function transferStyle(){
-  var contentTargets = getContentTargets(trueContentImage, model);
-  var styleTargets = getStyleTargets(trueStyleImage, model);
-  var styleLoss = getStyleLoss(generatedImage, contentTargets, model);
-  console.log(styleLoss);
-}
-
-// load content, style and generated images as tensors
-trueContentImage = loadImage(trueContentImage);
-trueStyleImage = loadImage(trueStyleImage);
-generatedImage = tf.variable(loadImage(generatedImage));

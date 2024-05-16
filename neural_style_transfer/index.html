@@ -26,21 +26,40 @@
         <div class="titlecontainer">
             <div class="maintitle">Neural Style Transfer</div>
         </div>
-        <div class="titletext">A deep CNN (VGG19) is used to extract features from one picture to transfer to the other. Try it below!</div>
+        <div class="titletext">A deep CNN (VGG19) is used to extract features from one picture ("style picture") to transfer to the other ("content picture"). Try it below!</div>
         <div class="titletext2">(Note that the processing is done on-device, so setting an epoch number that is too high can hang your browser.)</div>
         <div class="imagescontainer">
             <div class="contentandimagecontainer">
                 <div class="contentimagecontainer">
                     <div class="contentimagetitle">
-                            <input type="button" id="getContentPicButton" value="Choose content picture">
+                        <div class="contentimagetitletext"><label for="defaultContentPictures">Choose a content picture:</label></div>
+                        <div class="contentimagetitleselectors">
+                            <select name="defaultContentPictures" id="defaultContentPictures">
+                                <option value="nil">Dropdown list</option>
+                                <option value="dog">Dog</option>
+                                <option value="human">Human</option>
+                            </select>
+                            <div class="contentimagetitleselectorsOR">OR</div>
+                            <input type="button" id="getContentPicButton" value="Upload">
                             <input type="file" id="getContentPic" accept="image/png, image/jpeg">
+                        </div>
                     </div>
                     <div class="contentimage" id="contentimage"></div>
                 </div>
                 <div class="styleimagecontainer">
                     <div class="styleimagetitle">
-                        <input type="button" id="getStylePicButton" value="Choose style picture">
-                        <input type="file" id="getStylePic" accept="image/png, image/jpeg">
+                        <div class="styleimagetitletext"><label for="defaultStylePictures">Choose a style picture:</label></div>
+                        <div class="styleimagetitleselectors">
+                            <select name="defaultStylePictures" id="defaultStylePictures">
+                                <option value="nil">Dropdown list</option>
+                                <option value="starry_night">Starry Night</option>
+                                <option value="mona_lisa">Mona Lisa</option>
+                                <option value="cafe">A Man in a Cafe</option>
+                            </select>
+                            <div class="styleimagetitleselectorsOR">OR</div>
+                            <input type="button" id="getStylePicButton" value="Upload">
+                            <input type="file" id="getStylePic" accept="image/png, image/jpeg">
+                        </div>
                     </div>
                     <div class="styleimage" id="styleimage"></div>
                 </div>

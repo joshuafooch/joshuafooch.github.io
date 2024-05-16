@@ -53,7 +53,14 @@ img {
     margin-top: 20px;
 }
 
+.titletext {
+    width: 80vw;
+    text-align: center;
+}
+
 .titletext2 {
+    width: 80vw;
+    text-align: center;
     margin-bottom: 30px;
 }
 
@@ -74,6 +81,7 @@ img {
 }
 
 .contentimagecontainer {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -81,14 +89,38 @@ img {
 }
 
 .contentimagetitle {
-    width: 30vw;
+    width: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
+.contentimagetitletext {
+    width: 100%;
+    text-align: center;
+}
+
+.contentimagetitleselectors, .styleimagetitleselectors {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.contentimagetitleselectorsOR, .styleimagetitleselectorsOR {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 1.5rem;
+}
+
 #getContentPic {
     display: none;
+}
+
+#getContentPicButton {
+    padding: 0 10px;
 }
 
 .contentimage {
@@ -97,20 +129,32 @@ img {
 }
 
 .styleimagecontainer {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 10px;
 }
 
 .styleimagetitle {
-    width: 30vw;
+    width: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
+.styleimagetitletext {
+    width: 100%;
+    text-align: center;
+}
+
 #getStylePic {
     display: none;
+}
+
+#getStylePicButton {
+    padding: 0 10px;
 }
 
 .styleimage {
@@ -217,10 +261,23 @@ img {
 }
 
 
-/* #sketch-holder {
-    height: 400px;
-    width: 400px;
-} */
+@media screen and (max-width: 800px) {
+    .titletext, .titletext2 {
+        width: 640px;
+    }
+
+    .contentandimagecontainer, .contentimagecontainer, .styleimagecontainer {
+        width: 240px;
+    }
+
+    .contentimagetitletext, .styleimagetitletext {
+        width: 100%;
+    }
+
+    .styledimage {
+        width: 410px;
+    }
+}
 
 @media screen and (max-width: 600px) {
     /* .titlecontainer {
@@ -239,11 +296,7 @@ img {
         font-size: 30px;
     }
 
-    .titletext {
-        width: 80vw;
-    }
-
-    .titletext2 {
+    .titletext, .titletext2 {
         width: 80vw;
     }
 
@@ -254,16 +307,15 @@ img {
 
     .contentandimagecontainer {
         width: 80vw;
-        flex-direction: row;
         margin-bottom: 20px;
     }
 
     .contentimagecontainer {
-        width: 40vw;
+        width: 80vw;
     }
 
     .styleimagecontainer {
-        width: 40vw;
+        width: 80vw;
     }
 
     .styledimage {
