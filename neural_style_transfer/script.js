@@ -6,12 +6,15 @@ let trueStyleImage;
 let generatedImage;
 let contentMaxPixels;
 let styleMaxPixels;
+let learningRate;
 if (window.innerWidth > 600) {
   contentMaxPixels = 500000;
   styleMaxPixels = 100000;
+  learningRate = 0.5;
 } else {
-  contentMaxPixels = 200000;
-  styleMaxPixels = 100000;
+  contentMaxPixels = 100000;
+  styleMaxPixels = 50000;
+  learningRate = 0.05;
 }
 
 // instantiate buttons, dropdowns and slider
@@ -66,7 +69,7 @@ $("#getStylePic").on("change", (event) => {
 
 $("#transferbutton").on("click", () => {
   generatedImage = tf.tidy(() => {
-    return transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, 1e-4, 4e-4, model, Number($("#epochslider").val()), 0.5);
+    return transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, 1e-4, 4e-4, model, Number($("#epochslider").val()), learningRate);
   });
 });
 
@@ -256,8 +259,7 @@ function getTotalLoss(generatedImage, contentTargets, styleTargets, contentWeigh
   return loss;
 }
 
-function transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, contentWeight, styleWeight, model, epochs, learningRate=0.5){
-  const optimizer = tf.train.adam(20, 0.50);
+function transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, contentWeight, styleWeight, model, epochs, learningRate){
 
   const contentTargets = getContentTargets(trueContentImage, model);
   const styleTargets = getStyleTargets(trueStyleImage, model);
@@ -268,7 +270,7 @@ function transferStyleTraining(trueContentImage, trueStyleImage, generatedImage,
     const valueAndGrad = tf.valueAndGrad(totalLoss);
     const {value, grad} = valueAndGrad(newGeneratedImage);
     const decayedLearningRate = learningRate * 0.5 ** ((index+epochNum)/10);
-    newGeneratedImage = tf.sub(newGeneratedImage, tf.mul(0.3, grad));
+    newGeneratedImage = tf.sub(newGeneratedImage, tf.mul(decayedLearningRate, grad));
     console.log("Epoch: " + String(index + epochNum) + " Loss: " + String(value.dataSync([0])));
   }
   epochNum += epochs;
