@@ -9,11 +9,11 @@ let styleMaxPixels;
 let learningRate;
 if (window.innerWidth > 600) {
   contentMaxPixels = 500000;
-  styleMaxPixels = 100000;
+  styleMaxPixels = 400000;
   learningRate = 0.5;
 } else { // limit the image resolution for processing for mobile devices with a browser memory limit
   contentMaxPixels = 20000;
-  styleMaxPixels = 10000;
+  styleMaxPixels = 20000;
   learningRate = 0.005;
 }
 
@@ -22,8 +22,9 @@ $("#defaultContentPictures").on("change", (event) => {
   if (document.getElementById("contentimage").childNodes[0]) document.getElementById("contentimage").removeChild(document.getElementById("contentimage").childNodes[0]);
   if (event.target.value == "nil") return;
   let defaultPaths = {
-    "dog": "dog.jpg",
-    "human": "human.jpg"
+    "dog": "content_images/dog.jpg",
+    "cat": "content_images/cat.jpg",
+    "human": "content_images/human.jpg"
   };
   displayedContentImage = loadDefaultImage(defaultPaths[event.target.value], "content");
   displayedContentImage.classList.add("contentimage");
@@ -36,6 +37,7 @@ $("#defaultStylePictures").on("change", (event) => {
   let defaultPaths = {
     "starry_night": "style_images/starry_night.jpg",
     "mona_lisa": "style_images/mona_lisa.jpg",
+    "improvisation": "style_images/improvisation_31.jpg",
     "cafe": "style_images/a_man_in_a_cafe.jpg"
   };
   displayedStyleImage = loadDefaultImage(defaultPaths[event.target.value], "style");
@@ -67,9 +69,10 @@ $("#getStylePic").on("change", (event) => {
   document.getElementById("styleimage").appendChild(displayedStyleImage);
 });
 
-$("#transferbutton").on("click", () => {
+$("#transferbutton").on("click", async () => {
+  await $("#transferbutton").text("Transferring...");
   generatedImage = tf.tidy(() => {
-    return transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, 1e-4, 4e-4, model, Number($("#epochslider").val()), learningRate);
+    return transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, 1e-4, 8e-4, model, Number($("#epochslider").val()), learningRate);
   });
 });
 
@@ -260,12 +263,10 @@ function getTotalLoss(generatedImage, contentTargets, styleTargets, contentWeigh
 }
 
 function transferStyleTraining(trueContentImage, trueStyleImage, generatedImage, contentWeight, styleWeight, model, epochs, learningRate){
-
   const contentTargets = getContentTargets(trueContentImage, model);
   const styleTargets = getStyleTargets(trueStyleImage, model);
   let newGeneratedImage = generatedImage;
   for (let index = 0; index < epochs; index++) {
-    $("#transferbutton").text("Epoch: " + String(index+epochNum));
     const totalLoss = (newGeneratedImage) => getTotalLoss(newGeneratedImage, contentTargets, styleTargets, contentWeight, styleWeight, model);
     const valueAndGrad = tf.valueAndGrad(totalLoss);
     const {value, grad} = valueAndGrad(newGeneratedImage);
@@ -274,7 +275,7 @@ function transferStyleTraining(trueContentImage, trueStyleImage, generatedImage,
     console.log("Epoch: " + String(index + epochNum) + " Loss: " + String(value.dataSync([0])));
   }
   epochNum += epochs;
-  $("#transferbutton").text("Completed!");
+  $("#transferbutton").text("Transfer");
   newGeneratedImage = tf.clipByValue(newGeneratedImage, 0, 255);
   newGeneratedImage = tf.cast(newGeneratedImage, "int32");
   const generatedImageHeight = newGeneratedImage.shape[0];
