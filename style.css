@@ -24,3 +24,9 @@
     width: 10%;
     text-align: center;
 }
+
+@media screen and (max-width: 550px) {
+    .portfolio-table tr th:nth-child(4), .portfolio-table tr td:nth-child(4){
+        display: none;
+    }
+}
